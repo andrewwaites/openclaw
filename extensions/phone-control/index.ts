@@ -1,4 +1,3 @@
-import type { OpenClawConfig } from "openclaw/plugin-sdk/config-contracts";
 import {
   asDateTimestampMs,
   resolveExpiresAtMsFromDurationMs,
@@ -47,6 +46,8 @@ const GROUP_COMMANDS: Record<Exclude<ArmGroup, "all">, string[]> = {
   writes: ["calendar.add", "contacts.add", "reminders.add", "sms.send"],
 };
 const PHONE_CONTROL_COMMANDS = Object.values(GROUP_COMMANDS).flat();
+type RuntimeConfigSnapshot = ReturnType<OpenClawPluginApi["runtime"]["config"]["current"]>;
+type PhoneControlConfigView = OpenClawPluginApi["config"] | RuntimeConfigSnapshot;
 
 function uniqSorted(values: string[]): string[] {
   return sortUniqueStrings(normalizeStringEntries(values));
@@ -119,15 +120,15 @@ async function writeArmState(api: OpenClawPluginApi, state: ArmStateFile | null)
   await store.register(ARM_STATE_KEY, state);
 }
 
-function normalizeDenyList(cfg: OpenClawPluginApi["config"]): string[] {
+function normalizeDenyList(cfg: PhoneControlConfigView): string[] {
   return uniqSorted([...(cfg.gateway?.nodes?.denyCommands ?? [])]);
 }
 
-function normalizeAllowList(cfg: OpenClawPluginApi["config"]): string[] {
+function normalizeAllowList(cfg: PhoneControlConfigView): string[] {
   return uniqSorted([...(cfg.gateway?.nodes?.allowCommands ?? [])]);
 }
 
-function hasPhoneControlAllowOverride(cfg: OpenClawPluginApi["config"]): boolean {
+function hasPhoneControlAllowOverride(cfg: PhoneControlConfigView): boolean {
   const allow = new Set(normalizeAllowList(cfg));
   return PHONE_CONTROL_COMMANDS.some((cmd) => allow.has(cmd));
 }
@@ -158,7 +159,7 @@ async function disarmNow(params: {
   if (!state) {
     return { changed: false, restored: [], removed: [] };
   }
-  const cfg = api.runtime.config.current() as OpenClawConfig;
+  const cfg = api.runtime.config.current();
   const allow = new Set(normalizeAllowList(cfg));
   const deny = new Set(normalizeDenyList(cfg));
   const removed: string[] = [];
@@ -422,7 +423,7 @@ export default definePluginEntry({
           }
 
           const commands = resolveCommandsForGroup(group);
-          const cfg = api.runtime.config.current() as OpenClawConfig;
+          const cfg = api.runtime.config.current();
           const allowSet = new Set(normalizeAllowList(cfg));
           const denySet = new Set(normalizeDenyList(cfg));
 
