@@ -82,6 +82,7 @@ Docs: https://docs.openclaw.ai
 - Gateway/session state: list commands from the Gateway plugin registry, harden MCP loopback tool schemas, hide phantom agent-store rows from `sessions.list`, make task persistence failures explicit, and carry session UUIDs on interactive dispatch events.
 - OpenAI/TTS: handle speed directives for OpenAI TTS voices. (#74089)
 - CI/Crabbox: keep default runner capacity on the Azure credit-backed on-demand D4 lane with the Azure SSH port and a Git-independent full check job, so broad validation avoids low-priority spot quota stalls, hydrate port mismatches, non-Git hydrated workspaces, and stale AWS region hints.
+- CI/Crabbox: keep native Windows hydrated pnpm modules outside the mirrored workspace so source syncs do not remove Vitest before `test:windows:ci`.
 - CI/Crabbox: route Crabbox wrapper and Testbox workflow edits to their regression tests so changed-test gates do not silently run zero specs.
 - CI/workflows: route workflow sanity helper edits to their guard tests and cover composite-action input interpolation checks.
 - CI/tooling: route CI scope, dependency, changelog, and docs helper edits to their owner tests instead of silently skipping changed-test coverage.
