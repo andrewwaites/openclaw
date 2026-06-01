@@ -197,28 +197,30 @@ describe("CronToolSchema", () => {
     expect(schema?.description).toMatch(/false/i);
   });
 
-  it("job.agentId and job.sessionKey use plain string type for OpenAPI 3.0 compat", () => {
+  it("job.agentId and job.sessionKey advertise nullable string clears", () => {
     const root = schemaRecord.properties as
       | Record<string, { properties?: Record<string, unknown> }>
       | undefined;
-    const jobProps = root?.job?.properties as Record<string, { type?: unknown }> | undefined;
+    const jobProps = root?.job?.properties as
+      | Record<string, { anyOf?: readonly { type?: unknown }[] }>
+      | undefined;
 
-    // Must be plain "string" — not ["string", "null"] — for provider compat.
-    // Null semantics are conveyed via the field description and handled at runtime.
-    expect(jobProps?.agentId?.type).toBe("string");
-    expect(jobProps?.sessionKey?.type).toBe("string");
+    expect(jobProps?.agentId?.anyOf?.map((entry) => entry.type)).toEqual(["string", "null"]);
+    expect(jobProps?.sessionKey?.anyOf?.map((entry) => entry.type)).toEqual(["string", "null"]);
   });
 
-  it("patch.payload.toolsAllow uses plain array type for OpenAPI 3.0 compat", () => {
+  it("patch.payload.toolsAllow advertises nullable array clears", () => {
     const root = schemaRecord.properties as
       | Record<string, { properties?: Record<string, unknown> }>
       | undefined;
     const patchProps = root?.patch?.properties as
-      | Record<string, { properties?: Record<string, { type?: unknown }> }>
+      | Record<string, { properties?: Record<string, { anyOf?: readonly { type?: unknown }[] }> }>
       | undefined;
 
-    // Must be plain "array" — not ["array", "null"] — for provider compat.
-    expect(patchProps?.payload?.properties?.toolsAllow?.type).toBe("array");
+    expect(patchProps?.payload?.properties?.toolsAllow?.anyOf?.map((entry) => entry.type)).toEqual([
+      "array",
+      "null",
+    ]);
   });
 
   // Regression guard: ensure no OpenAPI 3.0 incompatible keywords leak into the
