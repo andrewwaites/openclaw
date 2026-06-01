@@ -58,7 +58,7 @@ export function buildMicrosoftFoundryProvider(): ProviderPlugin {
         const nextModel = Object.assign({}, model, {
           name: selectedModelCapabilities.modelName,
           api: selectedModelCapabilities.api,
-          reasoning: selectedModelCapabilities.reasoning || Boolean(model.reasoning),
+          reasoning: selectedModelCapabilities.reasoning || model.reasoning,
           thinkingLevelMap: selectedModelCapabilities.thinkingLevelMap ?? model.thinkingLevelMap,
           input: selectedModelCapabilities.input,
         });
@@ -161,7 +161,7 @@ export function buildMicrosoftFoundryProvider(): ProviderPlugin {
         ...model,
         name: capabilities.modelName,
         api: capabilities.api,
-        reasoning: capabilities.reasoning || Boolean(model.reasoning),
+        reasoning: capabilities.reasoning || model.reasoning,
         thinkingLevelMap: capabilities.thinkingLevelMap ?? model.thinkingLevelMap,
         input: capabilities.input,
         baseUrl: buildFoundryProviderBaseUrl(
