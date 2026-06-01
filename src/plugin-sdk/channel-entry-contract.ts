@@ -465,7 +465,7 @@ function loadBundledEntryModuleSync(
   return loaded;
 }
 
-// oxlint-disable-next-line typescript/no-unnecessary-type-parameters -- Dynamic entry export loaders use caller-supplied export types.
+// oxlint-disable typescript/no-unnecessary-type-parameters -- Dynamic entry export loaders use caller-supplied export types.
 /** Loads one export from a bundled channel sidecar module through the guarded entry boundary. */
 export function loadBundledEntryExportSync<T>(
   importMetaUrl: string,
@@ -488,6 +488,7 @@ export function loadBundledEntryExportSync<T>(
   }
   return record[reference.exportName] as T;
 }
+// oxlint-enable typescript/no-unnecessary-type-parameters
 
 /** Defines the full bundled channel entry contract used by core plugin registration. */
 export function defineBundledChannelEntry<TPlugin = ChannelPlugin>({
